@@ -12,7 +12,7 @@ class SecurityReport(FPDF):
         self.set_font('Arial', 'B', 10)
         self.set_text_color(255, 255, 255)
         self.set_xy(10, 5)
-        self.cell(0, 10, 'Headerpwn X - Security Audit', 0, 0, 'L')
+        self.cell(0, 10, 'Headerpwn - Security Audit', 0, 0, 'L')
         self.cell(0, 10, datetime.datetime.now().strftime('%Y-%m-%d'), 0, 0, 'R')
         self.ln(25)
 

@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 setup_logging()
 
 app = FastAPI(
-    title="Headerpwn X",
+    title="Headerpwn",
     description="HTTP Security Header Analyzer & Fuzzer",
     version="1.0"
 )
