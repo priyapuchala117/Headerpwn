@@ -1,70 +1,140 @@
-# Getting Started with Create React App
+# Headerpwn - HTTP Security Header Analyzer & Fuzzer
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Headerpwn is a modern, web-based tool designed to scan, analyze, and fuzz HTTP security headers for target URLs. It grades websites (from A+ to F) based on their security headers, provides detailed recommendations, visualizes security metrics using interactive charts, and allows exporting detailed PDF reports.
 
-## Available Scripts
+The project is structured with a **FastAPI backend** for high-performance header scanning and a **React frontend** powered by Material UI, Tailwind CSS, Recharts, and GSAP animations.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🚀 Features
+- **Comprehensive Scans:** Analyzes critical security headers like CSP, HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, and CORS.
+- **Grading System:** Instantly evaluates security posture and assigns an overall grade.
+- **Detailed Recommendations:** Provides descriptions, security risks, and suggested fixes for missing or misconfigured headers.
+- **Interactive Dashboard:** Beautiful charts (Score Gauges, Risk Pies, and Trend Areas) showing history and status.
+- **PDF Report Export:** Generates comprehensive PDF security reports.
+- **Modern UI:** Supports smooth transitions, micro-animations, and Dark/Light theme modes.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 📁 Project Directory Structure
+```text
+Headerpwn/
+├── backend/                  # FastAPI backend service
+│   ├── api/                  # API routers and endpoints
+│   │   └── routes.py         # Main routes (scan, report, history)
+│   ├── config/               # Configuration settings
+│   ├── fuzzer/               # Header fuzzing logic
+│   ├── reports/              # PDF generation utilities
+│   ├── scanner/              # Header checking and grading rules
+│   ├── main.py               # Backend server entrypoint
+│   └── requirements.txt      # Python dependencies
+├── src/                      # React frontend source
+│   ├── components/           # UI Components (Dashboard, Charts, Navbar, Forms, etc.)
+│   ├── theme.js              # Theme configurations (Light/Dark mode)
+│   ├── App.js / App.css      # Core frontend files
+│   └── index.js / index.css  # Frontend entrypoint and styles
+├── public/                   # Frontend public static assets
+├── package.json              # Node.js dependencies and scripts
+├── tailwind.config.js        # Tailwind CSS styling configuration
+└── README.md                 # Project documentation
+```
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🛠️ Local Development Setup
 
-### `npm run build`
+Follow these steps to run both the backend and frontend servers locally.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 1. Prerequisites
+- **Python** (version 3.8 or higher)
+- **Node.js** (LTS version recommended)
+- **npm** (comes packaged with Node.js)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 2. Setup & Run the Backend
+1. Open a terminal and navigate to the project root directory.
+2. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   ```
+3. Activate the virtual environment:
+   - **Windows (CMD/PowerShell):**
+     ```powershell
+     venv\Scripts\activate
+     ```
+   - **macOS/Linux:**
+     ```bash
+     source venv/bin/activate
+     ```
+4. Install python dependencies:
+   ```bash
+   pip install -r backend/requirements.txt
+   ```
+5. Run the FastAPI development server:
+   ```bash
+   uvicorn backend.main:app --reload
+   ```
+   *The backend will now be running at `http://127.0.0.1:8000`.*
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 3. Setup & Run the Frontend
+1. Open a new terminal in the project root directory.
+2. Install npm dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the React development server:
+   ```bash
+   npm start
+   ```
+   *The frontend will open automatically in your browser at `http://localhost:3000`.*
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🌐 Deployment Instructions
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+When preparing the application for production deployment, make sure to configure integration points between the frontend and backend.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 1. Backend Deployment (FastAPI)
+The backend can be deployed to platforms such as **Render**, **Railway**, **Heroku**, or any virtual server/container service (Docker).
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+- **Deployment Command:**
+  ```bash
+  uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+  ```
+- **CORS Policy Configuration:**
+  In `backend/main.py`, update the `CORSMiddleware` allowed origins to include your deployed frontend URL so the frontend can securely request scan data:
+  ```python
+  app.add_middleware(
+      CORSMiddleware,
+      allow_origins=["https://your-deployed-frontend-url.com"],
+      allow_credentials=True,
+      allow_methods=["*"],
+      allow_headers=["*"],
+  )
+  ```
 
-## Learn More
+### 2. Frontend Deployment (React)
+The frontend builds into standard static HTML/JS/CSS files, which can be deployed to static hosting providers like **Vercel**, **Netlify**, **GitHub Pages**, or **AWS S3**.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- **Build Command:**
+  ```bash
+  npm run build
+  ```
+- **Output Directory:** `build/` (upload the contents of this directory to your hosting provider)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 3. Connecting Frontend to the Deployed Backend
+The API URLs are currently defined in three files. When deploying, replace `http://localhost:8000` (or `http://127.0.0.1:8000`) with your live deployed backend URL:
 
-### Code Splitting
+1. **[HeaderForm.jsx](file:///d:/Headerpwn/New%20folder/New%20folder/src/components/HeaderForm.jsx#L9):**
+   ```javascript
+   const res = await fetch("https://your-deployed-backend.com/api/scan", {
+   ```
+2. **[ReportSection.jsx](file:///d:/Headerpwn/New%20folder/New%20folder/src/components/ReportSection.jsx#L59):**
+   ```javascript
+   const response = await fetch('https://your-deployed-backend.com/api/scan/report', {
+   ```
+3. **[HistoryPage.jsx](file:///d:/Headerpwn/New%20folder/New%20folder/src/components/HistoryPage.jsx#L47):**
+   ```javascript
+   const response = await fetch('https://your-deployed-backend.com/api/scan/report', {
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+*(Alternatively, you can modify these fetches to check `process.env.REACT_APP_API_URL` to toggle between production and development APIs dynamically).*
